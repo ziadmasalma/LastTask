@@ -1,5 +1,6 @@
 ﻿using LastTask.Model;
 using LastTask.Table;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -25,7 +26,7 @@ namespace LastTask.Service.User
             var user = new Table.User()
             {
                 Username=m.username,
-                Email=m.email,
+                
                 PasswordHash=passwordHash,
                 CreatedAt=DateTime.Now
             };
@@ -56,6 +57,14 @@ namespace LastTask.Service.User
             );
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
             return jwt;
+        }
+
+        public async Task<Table.User?> GetUser(string username) {
+            
+                return await _context.Users.FirstOrDefaultAsync(x => x.Username == username);
+            
+           
+            
         }
     }
 }

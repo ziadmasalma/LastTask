@@ -1,9 +1,8 @@
 ﻿namespace LastTask.Model
 {
-    public class UserRigModel
+    public class Userlogin
     {
         public string username { get; set; }
         public string password { get; set; }
-        public string confpassword { get; set; }
     }
 }

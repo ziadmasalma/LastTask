@@ -156,6 +156,28 @@ namespace LastTask.Migrations
                     b.ToTable("Posts");
                 });
 
+            modelBuilder.Entity("LastTask.Table.Profile", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Bio")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProfileImageURL")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("Profile");
+                });
+
             modelBuilder.Entity("LastTask.Table.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -164,27 +186,12 @@ namespace LastTask.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
-                    b.Property<string>("Bio")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProfileImageURL")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -278,6 +285,17 @@ namespace LastTask.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("LastTask.Table.Profile", b =>
+                {
+                    b.HasOne("LastTask.Table.User", "User")
+                        .WithOne("Profile")
+                        .HasForeignKey("LastTask.Table.Profile", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("LastTask.Table.Post", b =>
                 {
                     b.Navigation("Comments");
@@ -294,6 +312,9 @@ namespace LastTask.Migrations
                     b.Navigation("Likes");
 
                     b.Navigation("Posts");
+
+                    b.Navigation("Profile")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

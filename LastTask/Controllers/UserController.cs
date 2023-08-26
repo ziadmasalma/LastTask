@@ -1,4 +1,5 @@
-﻿using LastTask.Model;
+﻿using BCrypt.Net;
+using LastTask.Model;
 using LastTask.Service.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,9 +21,25 @@ namespace LastTask.Controllers
         {
             if (m.password != m.confpassword)
                 return BadRequest("Password Not Matched");
-            var token = _UserService.AddUser(m);
-            return Ok(token);
+           
+            var res = _UserService.AddUser(m);
+            return Ok(res);
 
+        }
+        [HttpPost("login")]
+        public async Task<IActionResult> login(Userlogin u)
+        {
+            var user = await _UserService.GetUser(u.username);
+            if (user == null)
+            {
+                return BadRequest("user dose not exist");
+            }
+            if (!BCrypt.Net.BCrypt.Verify(u.password, user.PasswordHash))
+            {
+                return BadRequest("wrong password");
+            }
+            var token = _UserService.CreateToken(u.username);
+            return Ok(token);
         }
     }
 }
