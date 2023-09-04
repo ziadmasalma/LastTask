@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LastTask.Table; // Import your table models
+using LastTask.Service.User;
+using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace LastTask.Controllers
 {
@@ -13,19 +15,21 @@ namespace LastTask.Controllers
     public class FriendshipController : ControllerBase
     {
         private readonly AplicationDbContext _context;
+        private readonly UserService _userService;
 
-        public FriendshipController(AplicationDbContext context)
+        public FriendshipController(AplicationDbContext context,UserService userService)
         {
             _context = context;
+            _userService = userService;
         }
 
         // Send a friend request
         [HttpPost("send-request")]
-        public async Task<IActionResult> SendFriendRequest(int userId, int friendId)
+        public async Task<IActionResult> SendFriendRequest( int friendId)
         {
             var friendship = new Friendship
             {
-                UserId = userId,
+                UserId = _userService.GetCurrentLoggedIn().Value,
                 FriendId = friendId,
                 Status = FriendshipStatus.Pending,
                 CreatedAt = DateTime.Now
@@ -72,9 +76,10 @@ namespace LastTask.Controllers
         }
 
         // Get a user's friend list
-        [HttpGet("friend-list/{userId}")]
-        public async Task<IActionResult> GetFriendList(int userId)
+        [HttpGet("friend-list")]
+        public async Task<IActionResult> GetFriendList()
         {
+            var userId = _userService.GetCurrentLoggedIn().Value;
             var friendList = await _context.Friendships
                 .Where(f => (f.UserId == userId || f.FriendId == userId) && f.Status == FriendshipStatus.Accepted)
                 .Select(f => f.UserId == userId ? f.Friend : f.User)
