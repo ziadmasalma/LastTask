@@ -3,6 +3,7 @@ using LastTask.Model;
 using LastTask.Service.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LastTask.Controllers
 {
@@ -26,7 +27,7 @@ namespace LastTask.Controllers
             return Ok(res);
 
         }
-        [HttpPost("login")]
+        [HttpPost("Auth")]
         public async Task<IActionResult> login(Userlogin u)
         {
             var user = await _UserService.GetUser(u.username);
@@ -38,8 +39,25 @@ namespace LastTask.Controllers
             {
                 return BadRequest("wrong password");
             }
-            var token = _UserService.CreateToken(u.username);
+            var token = _UserService.CreateToken(user);
+            _UserService.setsessionvalue(user);
             return Ok(token);
         }
+        [HttpPost("createprofile")]
+        public async Task<IActionResult> createprofile(UserModel model)
+        {
+
+            var userIdClaim = _UserService.GetCurrentLoggedIn();
+            if (userIdClaim == null)
+            {
+                return BadRequest("UserId claim is missing in the token.");
+            }
+
+            
+            var profile = await _UserService.createProfile(userIdClaim.Value ,model);
+            return Ok(profile);
+        }
+        
+
     }
 }

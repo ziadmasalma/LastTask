@@ -6,6 +6,8 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http;
+using LastTask.Service.Post;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,10 +24,13 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPostService , PostService>();
+builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddHttpContextAccessor();
-
-
+builder.Services.AddSession(options => {
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Set the session timeout
+});
 builder.Services.AddHangfire(x => x.UseSqlServerStorage(connStr));
 builder.Services.AddHangfireServer();
 
@@ -53,7 +58,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors(c => c.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+app.UseRouting();
 
+app.UseSession();
 app.UseHangfireDashboard("/dashboard");
 
 app.UseAuthentication();

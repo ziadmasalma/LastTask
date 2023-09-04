@@ -2,9 +2,8 @@
 {
     public class UserModel
     {
-        public string UserName { get; set; }
-        public string Email { get; set; }
+        public string fullname { get; set; }
         public string bio { get; set; }
-        public string profileimage { get; set; }
-    }
+        public string imageurl { get; set; }
+    }      
 }
