@@ -119,6 +119,11 @@ namespace LastTask.Service.Post
 
                 return (likesCount, commentsCount);
             }
+        public async Task<List<Table.Post>> getallPost()
+        {
+            var result = await _context.Posts.ToListAsync();
+            return result;
+        }
         
     }
 }

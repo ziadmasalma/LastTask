@@ -10,5 +10,7 @@ namespace LastTask.Service.Post
         Task<bool> LikePost(int postId, int userId);
         Task<bool> CommentOnPost(int postId, int userId, CommentModel commentModel);
         Task<(int LikesCount, int CommentsCount)> GetPostMetrics(int postId);
+        Task<List<Table.Post>> getallPost();
+
     }
 }

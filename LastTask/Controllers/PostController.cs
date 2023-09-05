@@ -81,5 +81,16 @@ namespace LastTask.Controllers
             var metrics = await _postService.GetPostMetrics(postId);
             return Ok(metrics);
         }
+        [HttpGet("posts")]
+        public async Task<IActionResult> getposts()
+        {
+            var result = await _postService.getallPost();
+            List<string> strings = new List<string>();
+            foreach (var post in result)
+            {
+                strings.Add(post.Content.ToString());
+            }
+            return Ok(strings);
+        }
     }
 }
